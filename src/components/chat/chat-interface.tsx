@@ -6,7 +6,6 @@ import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Send, Bot, User, X, MessageSquare } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -67,7 +66,7 @@ export function ChatInterface({
     const handleDiagramGenerated = (data: { success: boolean; diagram?: any; message?: string; error?: string }) => {
       setIsGenerating(false) // Desactivar estado de carga
       if (data.success) {
-        onSendAssistantMessage(`✅ ${data.message}`)
+        onSendAssistantMessage(`${data.message}`)
         if (data.diagram && onDiagramGenerated) {
           onDiagramGenerated(data.diagram)
         }
@@ -174,21 +173,19 @@ export function ChatInterface({
                       key={message.id}
                       className={cn("flex gap-2 items-start", message.role === "user" && "flex-row-reverse")}
                     >
-                      <Avatar
+                      <div
                         className={cn(
-                          "w-7 h-7 shrink-0",
-                          message.role === "assistant" && "bg-primary text-primary-foreground",
-                          message.role === "user" && "bg-accent text-accent-foreground",
+                          "w-7 h-7 shrink-0 flex items-center justify-center rounded-full",
+                          message.role === "assistant" && "bg-blue-100 text-blue-900 border border-blue-200",
+                          message.role === "user" && "bg-green-500 text-white",
                         )}
                       >
-                        <AvatarFallback>
-                          {message.role === "assistant" ? (
-                            <Bot className="w-3.5 h-3.5" />
-                          ) : (
-                            <User className="w-3.5 h-3.5" />
-                          )}
-                        </AvatarFallback>
-                      </Avatar>
+                        {message.role === "assistant" ? (
+                          <Bot className="w-3.5 h-3.5" />
+                        ) : (
+                          <User className="w-3.5 h-3.5" />
+                        )}
+                      </div>
 
                       <div className={cn("flex flex-col gap-1 max-w-[75%] min-w-0", message.role === "user" && "items-end")}>
                         <div
@@ -208,11 +205,9 @@ export function ChatInterface({
 
                 {(isLoading || isGenerating) && (
                   <div className="flex gap-2 items-start">
-                    <Avatar className="w-7 h-7 shrink-0 bg-blue-100 text-blue-900 border border-blue-200">
-                      <AvatarFallback>
-                        <Bot className="w-3.5 h-3.5" />
-                      </AvatarFallback>
-                    </Avatar>
+                    <div className="w-7 h-7 shrink-0 flex items-center justify-center rounded-full bg-blue-100 text-blue-900 border border-blue-200">
+                      <Bot className="w-3.5 h-3.5" />
+                    </div>
                     <div className="flex flex-col gap-1">
                       <div className="rounded-2xl px-3 py-2 bg-blue-100 text-blue-900 border border-blue-200">
                         <div className="flex gap-1 items-center">

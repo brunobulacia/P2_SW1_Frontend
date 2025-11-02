@@ -12,7 +12,7 @@ import {
 } from "@/components/custom/icons/UMLIcons";
 
 import { useDiagramStore } from "@/store/diagram.store";
-import { HomeIcon, SaveAllIcon, Hand, FileDown, FileJson, Bot, LogOut } from "lucide-react";
+import { HomeIcon, SaveAllIcon, Hand, FileDown, FileJson, Bot, LogOut, Camera, Smartphone } from "lucide-react";
 import { ChatInterface, type Message } from "@/components/chat/chat-interface"
 
 
@@ -123,8 +123,14 @@ export function AppSidebar() {
     setConnectionMode(null);
   };
 
-  const handleSelectAgent = () => {
-    console.log("Agente Inteligente");
+  const handleSubirFoto = () => {
+    console.log("Subir Foto");
+    setSelectedTool(null);
+    setConnectionMode(null);
+  }
+
+   const handleGenerarFlutter = () => {
+    console.log("Generar Flutter");
     setSelectedTool(null);
     setConnectionMode(null);
   }
@@ -230,6 +236,28 @@ export function AppSidebar() {
                         >
                           <FileJson className="text-lg" />
                           <span>Exportar Postman</span>
+                        </button>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <button
+                          onClick={handleSubirFoto}
+                          className="w-full"
+                        >
+                          <Camera className="text-lg" />
+                          <span>Subir Foto Diagrama</span>
+                        </button>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <button
+                          onClick={handleGenerarFlutter}
+                          className="w-full"
+                        >
+                          <Smartphone className="text-lg" />
+                          <span>Generar Flutter</span>
                         </button>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
