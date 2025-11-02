@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { getDiagramByInvitationToken } from "@/api/invitations";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth.store";
+import { useState } from "react";
 
 interface InvitationForm {
   token: string;
@@ -22,13 +23,22 @@ interface InvitationForm {
 
 export default function InvitationPage() {
   const router = useRouter();
-  const { register, handleSubmit } = useForm<InvitationForm>();
+  const { register, handleSubmit, formState: { errors } } = useForm<InvitationForm>();
   const { setCollaboratorAccess } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleAction = async (data: InvitationForm) => {
     console.log("Unirse al diagrama", data);
+    setIsLoading(true);
+    setError(null);
 
     try {
+      // Validar que no sea una URL
+      if (data.token.includes('http://') || data.token.includes('https://')) {
+        throw new Error("Por favor ingresa solo el token, no la URL completa");
+      }
+
       const diagram = await getDiagramByInvitationToken(data.token);
       console.log("Diagrama obtenido:", diagram);
       
@@ -39,9 +49,11 @@ export default function InvitationPage() {
         // Redirigir al diagrama
         router.push(`/diagram/?id=${diagram.id}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al unirse al diagrama:", error);
-      // Aquí podrías mostrar un mensaje de error al usuario
+      setError(error.message || "Token inválido. Verifica que hayas ingresado el token correcto.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -51,21 +63,41 @@ export default function InvitationPage() {
         <CardHeader>
           <CardTitle>Token de invitación al diagrama</CardTitle>
           <CardDescription>
-            Ingrese el token que ha recibido para unirse al diagrama
+            Ingrese <strong>solo el token</strong> que ha recibido para unirse al diagrama.
+            <br />
+            <span className="text-xs text-gray-500 mt-1 block">
+              ⚠️ No ingrese la URL completa, solo el código del token
+            </span>
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="token">Token</Label>
+                <Label htmlFor="token">Token de acceso</Label>
                 <Input
                   id="token"
                   type="text"
-                  placeholder="Ingrese su token aquí"
+                  placeholder="ej: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
                   required
-                  {...register("token")}
+                  {...register("token", {
+                    required: "El token es requerido",
+                    validate: (value) => {
+                      if (value.includes('http://') || value.includes('https://')) {
+                        return "Ingresa solo el token, no la URL completa";
+                      }
+                      return true;
+                    }
+                  })}
                 />
+                {errors.token && (
+                  <p className="text-sm text-red-600">{errors.token.message}</p>
+                )}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 rounded-md p-3">
+                    <p className="text-sm text-red-600">{error}</p>
+                  </div>
+                )}
               </div>
             </div>
           </form>
@@ -75,8 +107,9 @@ export default function InvitationPage() {
             type="submit"
             className="w-full"
             onClick={handleSubmit(handleAction)}
+            disabled={isLoading}
           >
-            Unirse al diagrama
+            {isLoading ? "Verificando..." : "Unirse al diagrama"}
           </Button>
         </CardFooter>
       </Card>
