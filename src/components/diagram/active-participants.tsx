@@ -21,27 +21,27 @@ export function ActiveParticipants({ diagramId, className = "" }: ActiveParticip
   const [isVisible, setIsVisible] = useState(false);
   
   // Debug: mostrar siempre el componente
-  console.log("🎨 ActiveParticipants: Renderizando con diagramId:", diagramId);
-  console.log("🎨 ActiveParticipants: Participantes actuales:", participants.length);
+  // console.log("🎨 ActiveParticipants: Renderizando con diagramId:", diagramId);
+  // console.log("🎨 ActiveParticipants: Participantes actuales:", participants.length);
 
   useEffect(() => {
     const socket = getSocket();
-    console.log("🔌 ActiveParticipants: Socket conectado:", socket.connected);
-    console.log("🔌 ActiveParticipants: DiagramId:", diagramId);
+    // console.log("🔌 ActiveParticipants: Socket conectado:", socket.connected);
+    // console.log("🔌 ActiveParticipants: DiagramId:", diagramId);
 
     const handleParticipantsUpdate = (data: { participants: Participant[] }) => {
-      console.log("👥 ActiveParticipants: Recibida actualización de participantes:", data);
+      // console.log("👥 ActiveParticipants: Recibida actualización de participantes:", data);
       setParticipants(data.participants || []);
     };
 
     const handleDisconnect = () => {
-      console.log("🔌 ActiveParticipants: Socket desconectado");
+      // console.log("🔌 ActiveParticipants: Socket desconectado");
       // Limpiar participantes cuando se desconecta
       setParticipants([]);
     };
 
     const handleReconnect = () => {
-      console.log("🔌 ActiveParticipants: Socket reconectado");
+      // console.log("🔌 ActiveParticipants: Socket reconectado");
       // Solicitar participantes nuevamente al reconectar
       socket.emit("get-participants", { diagramId });
     };
@@ -52,7 +52,7 @@ export function ActiveParticipants({ diagramId, className = "" }: ActiveParticip
     socket.on("connect", handleReconnect);
 
     // Solicitar lista inicial de participantes
-    console.log("🔌 ActiveParticipants: Solicitando participantes para diagrama:", diagramId);
+    // console.log("🔌 ActiveParticipants: Solicitando participantes para diagrama:", diagramId);
     socket.emit("get-participants", { diagramId });
 
     // Configurar heartbeat para mantener la conexión activa

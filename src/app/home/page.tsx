@@ -796,7 +796,7 @@ export default function DclassMigrator() {
                         Comparte este enlace con tu colaborador:
                       </p>
                       <p className="text-sm font-mono text-blue-600 break-all">
-                        http://54.207.207.246:3000/invitation
+                        http://localhost:3000/invitation
                       </p>
                     </div>
                   </div>

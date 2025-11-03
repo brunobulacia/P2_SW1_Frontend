@@ -20,13 +20,29 @@ function getFreshData(id: string, fallback: ClassNodeData): ClassNodeData {
   return (node?.data as ClassNodeData) ?? fallback;
 }
 
+/** Helper: asegura que todos los métodos tengan IDs únicos */
+function ensureMethodIds(methods: Method[]): Method[] {
+  return methods.map((method, index) => ({
+    ...method,
+    id: method.id || `method-${Date.now()}-${index}`,
+  }));
+}
+
+/** Helper: asegura que todos los atributos tengan IDs únicos */
+function ensureAttributeIds(attributes: Attribute[]): Attribute[] {
+  return attributes.map((attr, index) => ({
+    ...attr,
+    id: attr.id || `attr-${Date.now()}-${index}`,
+  }));
+}
+
 export const TextUpdaterNode = memo(function TextUpdaterNode(prop: NodeProps) {
   const nodeData = prop.data as ClassNodeData;
 
   // Estado local controlado
   const [className, setClassName] = useState(nodeData?.label || "Clase");
-  const [attributes, setAttributes] = useState<Attribute[]>(nodeData?.attributes || []);
-  const [methods, setMethods] = useState<Method[]>(nodeData?.methods || []);
+  const [attributes, setAttributes] = useState<Attribute[]>(ensureAttributeIds(nodeData?.attributes || []));
+  const [methods, setMethods] = useState<Method[]>(ensureMethodIds(nodeData?.methods || []));
   const [showAddAttribute, setShowAddAttribute] = useState(false);
   const [showAddMethod, setShowAddMethod] = useState(false);
   const [newAttribute, setNewAttribute] = useState({ name: "", type: "", visibility: "private" as const });
@@ -53,8 +69,8 @@ export const TextUpdaterNode = memo(function TextUpdaterNode(prop: NodeProps) {
   }, [nodeData?.label]);
 
   useEffect(() => {
-    if (nodeData?.attributes) setAttributes(nodeData.attributes);
-    if (nodeData?.methods) setMethods(nodeData.methods);
+    if (nodeData?.attributes) setAttributes(ensureAttributeIds(nodeData.attributes));
+    if (nodeData?.methods) setMethods(ensureMethodIds(nodeData.methods));
   }, [nodeData?.attributes, nodeData?.methods]);
 
   // Cerrar menú contextual / ESC
@@ -396,17 +412,15 @@ export const TextUpdaterNode = memo(function TextUpdaterNode(prop: NodeProps) {
                   onClick={(e) => e.stopPropagation()}
                 />
                 <span className="text-gray-500">)</span>
-                <>
-                  <span className="text-gray-500">: </span>
-                  <input
-                    type="text"
-                    value={method.returnType || ""}
-                    onChange={(e) => updateMethod(method.id, "returnType", e.target.value)}
-                    className="nodrag bg-transparent border-none outline-none focus:bg-yellow-100 px-1 text-blue-600 w-16"
-                    placeholder="void"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </>
+                <span className="text-gray-500">: </span>
+                <input
+                  type="text"
+                  value={method.returnType || ""}
+                  onChange={(e) => updateMethod(method.id, "returnType", e.target.value)}
+                  className="nodrag bg-transparent border-none outline-none focus:bg-yellow-100 px-1 text-blue-600 w-16"
+                  placeholder="void"
+                  onClick={(e) => e.stopPropagation()}
+                />
                 <select
                   value={method.visibility}
                   onChange={(e) => updateMethod(method.id, "visibility", e.target.value)}
