@@ -40,7 +40,7 @@ import {
 import { useState } from "react";
 import { RelationType } from "@/types/nodes/nodes";
 import { useRouter } from "next/navigation";
-import { getZip, getPostman } from "@/api/exports";
+import { getZip, getPostman, getFlutter } from "@/api/exports";
 import { useAuthStore } from "@/store/auth.store";
 
 // Elementos (nodos)
@@ -261,8 +261,21 @@ export function AppSidebar() {
     setConnectionMode(null);
   };
 
-  const handleGenerarFlutter = () => {
-    console.log("Generar Flutter");
+  const handleGenerarFlutter = async () => {
+    try {
+      const res = await getFlutter(currentDiagramId!);
+      const url = window.URL.createObjectURL(new Blob([res]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "flutter_project.zip");
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error al exportar Flutter: ", error);
+      alert("Error al generar el proyecto de Flutter. Por favor, intenta de nuevo.");
+    }
     setSelectedTool(null);
     setConnectionMode(null);
   };
